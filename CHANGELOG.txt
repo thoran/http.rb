@@ -1,6 +1,14 @@
+# 202503030
+# 0.13.2: Change repo name to match gem name (/HTTP/http.rb/); + Use HTTP::VERSION; /require/require_relative/
+1. ~ README.md: /HTTP/http.rb/, /HTTP.rb/http.rb/
+2. + HTTP::VERSION
+3. ~ http.rb.gemspec: Use HTTP::VERSION.
+4. ~ HTTP.get: /require/require_relative/
+5. ~ HTTP.post: /require/require_relative/
+
 # 20250304
 # 0.13.1: /HTTP.rb.gemspec/http.rb.gemspec/
-# 1. /HTTP.rb.gemspec/http.rb.gemspec/ (Wonder no more!)
+1. /HTTP.rb.gemspec/http.rb.gemspec/ (Wonder no more!)
 
 # 20250304
 # 0.13.0: Extend Net::HTTPResponse to allow use of predicate methods for statuses and optionally prevent redirections.

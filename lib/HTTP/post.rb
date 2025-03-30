@@ -6,14 +6,11 @@ require 'net/http'
 require 'openssl'
 require 'uri'
 
-lib_dir = File.expand_path(File.join(__FILE__, '..', '..'))
-$LOAD_PATH.unshift(lib_dir) unless $LOAD_PATH.include?(lib_dir)
-
-require 'HTTP/get'
-require 'Net/HTTP/set_options'
-require 'Net/HTTP/Post/set_headers'
-require 'Net/HTTPResponse/StatusPredicates'
-require 'URI/Generic/use_sslQ'
+require_relative '../HTTP/get'
+require_relative '../Net/HTTP/set_options'
+require_relative '../Net/HTTP/Post/set_headers'
+require_relative '../Net/HTTPResponse/StatusPredicates'
+require_relative '../URI/Generic/use_sslQ'
 
 module HTTP
 

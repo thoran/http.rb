@@ -1,7 +1,9 @@
+require_relative './lib/HTTP/VERSION'
+
 Gem::Specification.new do |s|
   s.name = 'http.rb'
-  s.version = '0.13.1'
-  s.date = '2025-03-04'
+  s.version = HTTP::VERSION
+  s.date = '2025-03-30'
 
   s.summary = "HTTP made easy."
   s.description = "HTTP is the simplest HTTP mezzanine library for Ruby.  Supply a URI, \
@@ -12,6 +14,7 @@ Gem::Specification.new do |s|
   s.homepage = "http://github.com/thoran/HTTP"
 
   s.files = [
+    'CHANGELOG.txt',
     'Gemfile',
     'README.md',
     'http.rb.gemspec',

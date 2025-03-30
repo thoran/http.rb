@@ -1,4 +1,4 @@
-# HTTP
+# http.rb
 
 ## Description
 
@@ -19,15 +19,17 @@ Perhaps someone will appreciate its relative simplicity, since it is much smalle
 
 Add this line to your application's Gemfile:
 
-    gem 'HTTP.rb'
+    gem 'http.rb'
+
 
 And then execute:
 
     $ bundle
 
+
 Or install it yourself as:
 
-    $ gem install HTTP.rb
+    $ gem install http.rb
 
 
 ## Usage
