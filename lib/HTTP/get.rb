@@ -20,7 +20,11 @@ module HTTP
     options[:use_ssl] ||= uri.use_ssl?
     options[:verify_mode] ||= OpenSSL::SSL::VERIFY_NONE
     http.options = options
-    request_object = Net::HTTP::Get.new(uri.request_uri + '?' + args.x_www_form_urlencode)
+    if args.empty?
+      request_object = Net::HTTP::Get.new(uri.request_uri)
+    else
+      request_object = Net::HTTP::Get.new(uri.request_uri + '?' + args.x_www_form_urlencode)
+    end
     request_object.headers = headers
     request_object.basic_auth(uri.user, uri.password) if uri.user
     response = http.request(request_object)

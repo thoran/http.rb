@@ -1,3 +1,9 @@
+# 20250501
+# 0.13.3: Handle when there's a redirect to a URL with arguments, so as to not add an additional '?' at the end.
+1. ~ HTTP.get: Check if the args hash is empty.
+2. ~ HTTP::VERSION: /0.13.2/0.13.3/
+3. ~ http.rb.gemspec: Change date.
+
 # 202503030
 # 0.13.2: Change repo name to match gem name (/HTTP/http.rb/); + Use HTTP::VERSION; /require/require_relative/
 1. ~ README.md: /HTTP/http.rb/, /HTTP.rb/http.rb/
