@@ -1,3 +1,14 @@
+# 20250711
+# 0.14.0: + DELETE
+1. + HTTP.delete
+2. + Net::HTTP::Delete#set_headers
+3. + spec/HTTP/delete_spec.rb
+4. ~ spec/HTTP/get_spec.rb: /require/require_relative/
+5. ~ spec/HTTP/post_spec.rb: /require/require_relative/
+6. ~ HTTP::VERSION: /0.13.3/0.14.0/
+7. ~ CHANGELOG.txt
+8. ~ http.rb.gemspec: Change date.
+
 # 20250501
 # 0.13.3: Handle when there's a redirect to a URL with arguments, so as to not add an additional '?' at the end.
 1. ~ HTTP.get: Check if the args hash is empty.

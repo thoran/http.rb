@@ -1,9 +1,6 @@
 # spec/HTTP/get_spec.rb
 
-spec_dir = File.expand_path(File.join(__FILE__, '..', '..'))
-$LOAD_PATH.unshift(spec_dir) unless $LOAD_PATH.include?(spec_dir)
-
-require 'spec_helper'
+require_relative '../spec_helper'
 require 'HTTP/get'
 
 describe ".get" do
@@ -81,7 +78,7 @@ describe ".get" do
     let(:uri){'http://example.com/path'}
     let(:parsed_uri){URI.parse(uri)}
     let(:headers) do; {'User-Agent' => 'Rspec'}; end
-    let(:get_argument){parsed_uri.request_uri + '?'}
+    let(:get_argument){parsed_uri.request_uri}
     let(:request_object){Net::HTTP::Get.new(get_argument)}
 
     before do

@@ -1,13 +1,13 @@
-# spec/HTTP/post_spec.rb
+# spec/HTTP/delete_spec.rb
 
 require_relative '../spec_helper'
-require 'HTTP/post'
+require 'HTTP/delete'
 
-describe ".post" do
+describe ".delete" do
   context "with uri-only supplied" do
     before do
-      stub_request(:post, 'http://example.com/path').
-        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Type'=>'application/x-www-form-urlencoded', 'User-Agent'=>'Ruby'}).
+      stub_request(:delete, 'http://example.com/path').
+        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
           to_return(status: 200, body: '', headers: {})
     end
 
@@ -18,13 +18,13 @@ describe ".post" do
 
       it "creates an instance of URI" do
         expect(URI).to receive(:parse).with(uri).and_return(parsed_uri)
-        response = HTTP.post(uri)
+        response = HTTP.delete(uri)
         expect(response.success?).to eq(true)
       end
 
       it "creates a new Net::HTTP object" do
         expect(Net::HTTP).to receive(:new).with(parsed_uri.host, parsed_uri.port).and_return(net_http_object)
-        response = HTTP.post(uri)
+        response = HTTP.delete(uri)
         expect(response.success?).to eq(true)
       end
     end
@@ -36,72 +36,40 @@ describe ".post" do
 
       it "returns an instance of URI" do
         expect(uri).to eq(uri)
-        response = HTTP.post(uri)
-        expect(response.success?).to eq(true)
+        HTTP.delete(uri)
       end
 
       it "creates a new Net::HTTP object" do
         expect(Net::HTTP).to receive(:new).with(uri.host, uri.port).and_return(net_http_object)
-        response = HTTP.post(uri)
+        response = HTTP.delete(uri)
         expect(response.success?).to eq(true)
       end
     end
   end
 
-  context "with form data supplied" do
+  context "with args supplied" do
     let(:uri){'http://example.com/path'}
     let(:parsed_uri){URI.parse(uri)}
     let(:args) do; {a: 1, b: 2}; end
-    let(:headers) do; {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Type'=>'application/x-www-form-urlencoded', 'User-Agent'=>'Ruby'}; end
-    let(:encoded_form_data){args.x_www_form_urlencode}
-    let(:request_uri){parsed_uri.request_uri}
-    let(:request_object){Net::HTTP::Post.new(request_uri)}
+    let(:x_www_form_urlencoded_arguments) do; args.x_www_form_urlencode; end
+    let(:get_argument){parsed_uri.request_uri + '?' + x_www_form_urlencoded_arguments}
+    let(:request_object){Net::HTTP::Delete.new(get_argument)}
 
     before do
-      stub_request(:post, "http://example.com/path").
-        with(body: encoded_form_data, headers: headers).
+      stub_request(:delete, 'http://example.com/path?a=1&b=2').
+        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
           to_return(status: 200, body: '', headers: {})
     end
 
-    it "sets the form data" do
-      allow(Net::HTTP::Post).to receive(:new).with(request_uri).and_return(request_object)
-      response = HTTP.post(uri, args, headers)
-      expect(request_object.body).to eq(encoded_form_data)
+    it "x_www_form_urlencode's the args" do
+      expect(args).to receive(:x_www_form_urlencode).and_return(x_www_form_urlencoded_arguments)
+      response = HTTP.delete(uri, args)
       expect(response.success?).to eq(true)
     end
 
-    it "creates a new Net::HTTP::Post object" do
-      expect(Net::HTTP::Post).to receive(:new).with(request_uri).and_return(request_object)
-      response = HTTP.post(uri, args, headers)
-      expect(response.success?).to eq(true)
-    end
-  end
-
-  context "with JSON data supplied" do
-    let(:uri){'http://example.com/path'}
-    let(:parsed_uri){URI.parse(uri)}
-    let(:args) do; {a: 1, b: 2}; end
-    let(:headers) do; {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Type'=>'application/json', 'User-Agent'=>'Ruby'}; end
-    let(:json_data){JSON.dump(args)}
-    let(:request_uri){parsed_uri.request_uri}
-    let(:request_object){Net::HTTP::Post.new(request_uri)}
-
-    before do
-      stub_request(:post, "http://example.com/path").
-        with(body: json_data, headers: headers).
-          to_return(status: 200, body: '', headers: {})
-    end
-
-    it "sets the body" do
-      allow(Net::HTTP::Post).to receive(:new).with(request_uri).and_return(request_object)
-      response = HTTP.post(uri, args, headers)
-      expect(request_object.body).to eq(json_data)
-      expect(response.success?).to eq(true)
-    end
-
-    it "creates a new Net::HTTP::Post object" do
-      expect(Net::HTTP::Post).to receive(:new).with(request_uri).and_return(request_object)
-      response = HTTP.post(uri, args, headers)
+    it "creates a new Net::HTTP::Delete object" do
+      expect(Net::HTTP::Delete).to receive(:new).with(get_argument).and_return(request_object)
+      response = HTTP.delete(uri, args)
       expect(response.success?).to eq(true)
     end
   end
@@ -110,18 +78,18 @@ describe ".post" do
     let(:uri){'http://example.com/path'}
     let(:parsed_uri){URI.parse(uri)}
     let(:headers) do; {'User-Agent' => 'Rspec'}; end
-    let(:request_uri){parsed_uri.request_uri}
-    let(:request_object){Net::HTTP::Post.new(request_uri)}
+    let(:get_argument){parsed_uri.request_uri}
+    let(:request_object){Net::HTTP::Delete.new(get_argument)}
 
     before do
-      stub_request(:post, 'http://example.com/path').
-        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Type'=>'application/x-www-form-urlencoded', 'User-Agent'=>'Rspec'}).
+      stub_request(:delete, 'http://example.com/path').
+        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Rspec'}).
           to_return(status: 200, body: '', headers: {})
     end
 
     it "sets the headers on the request object" do
-      allow(Net::HTTP::Post).to receive(:new).with(request_uri).and_return(request_object)
-      response = HTTP.post(uri, {}, headers)
+      allow(Net::HTTP::Delete).to receive(:new).with(get_argument).and_return(request_object)
+      response = HTTP.delete(uri, {}, headers)
       expect(request_object['User-Agent']).to eq('Rspec')
       expect(response.success?).to eq(true)
     end
@@ -134,14 +102,14 @@ describe ".post" do
     let(:options) do; {use_ssl: true}; end
 
     before do
-      stub_request(:post, 'https://example.com:80/path').
-        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Type'=>'application/x-www-form-urlencoded', 'User-Agent'=>'Ruby'}).
+      stub_request(:delete, 'https://example.com:80/path').
+        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
           to_return(status: 200, body: '', headers: {})
     end
 
     it "sets the use_ssl option on the Net::HTTP instance" do
       allow(Net::HTTP).to receive(:new).with(parsed_uri.host, parsed_uri.port).and_return(net_http_object)
-      response = HTTP.post(uri, {}, {}, options)
+      response = HTTP.delete(uri, {}, {}, options)
       expect(net_http_object.instance_variable_get(:@use_ssl)).to be_truthy
       expect(response.success?).to eq(true)
     end
@@ -151,13 +119,13 @@ describe ".post" do
     let(:uri){'http://example.com/path'}
 
     before do
-      stub_request(:post, 'http://example.com/path').
-        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Type'=>'application/x-www-form-urlencoded', 'User-Agent'=>'Ruby'}).
+      stub_request(:delete, 'http://example.com/path').
+        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
           to_return(status: 200, body: '', headers: {})
     end
 
     it "yields an instance of Net::HTTPResponse" do
-      expect{|b| HTTP.post(uri, &b)}.to yield_with_args(Net::HTTPResponse)
+      expect{|b| HTTP.delete(uri, &b)}.to yield_with_args(Net::HTTPResponse)
     end
   end
 
@@ -173,30 +141,30 @@ describe ".post" do
 
     context "via 301" do
       before do
-        stub_request(:post, request_uri).
+        stub_request(:delete, request_uri).
           with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
             to_return(status: 301, body: '', headers: {'location' => redirect_uri})
       end
 
       it "does a redirect" do
-        expect(HTTP).to receive(:post).once.with(request_uri).and_call_original
+        expect(HTTP).to receive(:delete).once.with(request_uri).and_call_original
         expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
-        response = HTTP.post(request_uri)
+        response = HTTP.delete(request_uri)
         expect(response.success?).to eq(true)
       end
     end
 
     context "via 302" do
       before do
-        stub_request(:post, request_uri).
+        stub_request(:delete, request_uri).
           with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
             to_return(status: 302, body: '', headers: {'location' => redirect_uri})
       end
 
       it "does a redirect" do
-        expect(HTTP).to receive(:post).with(request_uri).and_call_original
-        expect(HTTP).to receive(:get).with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
-        response = HTTP.post(request_uri)
+        expect(HTTP).to receive(:delete).once.with(request_uri).and_call_original
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
+        response = HTTP.delete(request_uri)
         expect(response.success?).to eq(true)
       end
     end
@@ -215,30 +183,30 @@ describe ".post" do
 
     context "via 301" do
       before do
-        stub_request(:post, request_uri).
+        stub_request(:delete, request_uri).
           with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
             to_return(status: 301, body: '', headers: {'location' => redirect_path})
       end
 
       it "does a redirect" do
+        expect(HTTP).to receive(:delete).once.with(request_uri).and_call_original
         expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
-        expect(HTTP).to receive(:post).once.with(request_uri).and_call_original
-        response = HTTP.post(request_uri)
+        response = HTTP.delete(request_uri)
         expect(response.success?).to eq(true)
       end
     end
 
     context "via 302" do
       before do
-        stub_request(:post, request_uri).
-          with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Type'=>'application/x-www-form-urlencoded', 'User-Agent'=>'Ruby'}).
+        stub_request(:delete, request_uri).
+          with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
             to_return(status: 302, body: '', headers: {'location' => redirect_path})
       end
 
       it "does a redirect" do
+        expect(HTTP).to receive(:delete).once.with(request_uri).and_call_original
         expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
-        expect(HTTP).to receive(:post).once.with(request_uri).and_call_original
-        response = HTTP.post(request_uri)
+        response = HTTP.delete(request_uri)
         expect(response.success?).to eq(true)
       end
     end
@@ -250,28 +218,28 @@ describe ".post" do
 
     context "via 301" do
       before do
-        stub_request(:post, request_uri).
+        stub_request(:delete, request_uri).
           with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
             to_return(status: 301, body: '', headers: {'location' => redirect_uri})
       end
 
       it "doesn't redirect" do
-        expect(HTTP).to receive(:post).once.with(request_uri, {}, {}, {no_redirect: true}).and_call_original
-        response = HTTP.post(request_uri, {}, {}, {no_redirect: true})
+        expect(HTTP).to receive(:delete).once.with(request_uri, {}, {}, {no_redirect: true}).and_call_original
+        response = HTTP.delete(request_uri, {}, {}, {no_redirect: true})
         expect(response.redirection?).to eq(true)
       end
     end
 
     context "via 302" do
       before do
-        stub_request(:post, request_uri).
+        stub_request(:delete, request_uri).
           with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
             to_return(status: 302, body: '', headers: {'location' => redirect_uri})
       end
 
       it "doesn't redirect" do
-        expect(HTTP).to receive(:post).once.with(request_uri, {}, {}, {no_redirect: true}).and_call_original
-        response = HTTP.post(request_uri, {}, {}, {no_redirect: true})
+        expect(HTTP).to receive(:delete).once.with(request_uri, {}, {}, {no_redirect: true}).and_call_original
+        response = HTTP.delete(request_uri, {}, {}, {no_redirect: true})
         expect(response.redirection?).to eq(true)
       end
     end
