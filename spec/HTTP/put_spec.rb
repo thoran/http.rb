@@ -7,7 +7,7 @@ describe ".put" do
   context "with uri-only supplied" do
     before do
       stub_request(:put, 'http://example.com/path').
-        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Type'=>'application/x-www-form-urlencoded', 'User-Agent'=>'Ruby'}).
           to_return(status: 200, body: '', headers: {})
     end
 
@@ -36,7 +36,8 @@ describe ".put" do
 
       it "returns an instance of URI" do
         expect(uri).to eq(uri)
-        HTTP.put(uri)
+        response = HTTP.put(uri)
+        expect(response.success?).to eq(true)
       end
 
       it "creates a new Net::HTTP object" do
@@ -47,29 +48,60 @@ describe ".put" do
     end
   end
 
-  context "with args supplied" do
+  context "with form data supplied" do
     let(:uri){'http://example.com/path'}
     let(:parsed_uri){URI.parse(uri)}
     let(:args) do; {a: 1, b: 2}; end
-    let(:x_www_form_urlencoded_arguments) do; args.x_www_form_urlencode; end
-    let(:get_argument){parsed_uri.request_uri + '?' + x_www_form_urlencoded_arguments}
-    let(:request_object){Net::HTTP::Put.new(get_argument)}
+    let(:headers) do; {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Type'=>'application/x-www-form-urlencoded', 'User-Agent'=>'Ruby'}; end
+    let(:encoded_form_data){args.x_www_form_urlencode}
+    let(:request_uri){parsed_uri.request_uri}
+    let(:request_object){Net::HTTP::Put.new(request_uri)}
 
     before do
-      stub_request(:put, 'http://example.com/path?a=1&b=2').
-        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+      stub_request(:put, "http://example.com/path").
+        with(body: encoded_form_data, headers: headers).
           to_return(status: 200, body: '', headers: {})
     end
 
-    it "x_www_form_urlencode's the args" do
-      expect(args).to receive(:x_www_form_urlencode).and_return(x_www_form_urlencoded_arguments)
-      response = HTTP.put(uri, args)
+    it "sets the form data" do
+      allow(Net::HTTP::Put).to receive(:new).with(request_uri).and_return(request_object)
+      response = HTTP.put(uri, args, headers)
+      expect(request_object.body).to eq(encoded_form_data)
       expect(response.success?).to eq(true)
     end
 
-    it "creates a new Net::HTTP::Put object" do
-      expect(Net::HTTP::Put).to receive(:new).with(get_argument).and_return(request_object)
-      response = HTTP.put(uri, args)
+    it "creates a new Net::HTTP::Post object" do
+      expect(Net::HTTP::Put).to receive(:new).with(request_uri).and_return(request_object)
+      response = HTTP.put(uri, args, headers)
+      expect(response.success?).to eq(true)
+    end
+  end
+
+  context "with JSON data supplied" do
+    let(:uri){'http://example.com/path'}
+    let(:parsed_uri){URI.parse(uri)}
+    let(:args) do; {a: 1, b: 2}; end
+    let(:headers) do; {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Type'=>'application/json', 'User-Agent'=>'Ruby'}; end
+    let(:json_data){JSON.dump(args)}
+    let(:request_uri){parsed_uri.request_uri}
+    let(:request_object){Net::HTTP::Put.new(request_uri)}
+
+    before do
+      stub_request(:put, "http://example.com/path").
+        with(body: json_data, headers: headers).
+          to_return(status: 200, body: '', headers: {})
+    end
+
+    it "sets the body" do
+      allow(Net::HTTP::Put).to receive(:new).with(request_uri).and_return(request_object)
+      response = HTTP.put(uri, args, headers)
+      expect(request_object.body).to eq(json_data)
+      expect(response.success?).to eq(true)
+    end
+
+    it "creates a new Net::HTTP::Post object" do
+      expect(Net::HTTP::Put).to receive(:new).with(request_uri).and_return(request_object)
+      response = HTTP.put(uri, args, headers)
       expect(response.success?).to eq(true)
     end
   end
@@ -78,17 +110,17 @@ describe ".put" do
     let(:uri){'http://example.com/path'}
     let(:parsed_uri){URI.parse(uri)}
     let(:headers) do; {'User-Agent' => 'Rspec'}; end
-    let(:get_argument){parsed_uri.request_uri}
-    let(:request_object){Net::HTTP::Put.new(get_argument)}
+    let(:request_uri){parsed_uri.request_uri}
+    let(:request_object){Net::HTTP::Put.new(request_uri)}
 
     before do
       stub_request(:put, 'http://example.com/path').
-        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Rspec'}).
+        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Type'=>'application/x-www-form-urlencoded', 'User-Agent'=>'Rspec'}).
           to_return(status: 200, body: '', headers: {})
     end
 
     it "sets the headers on the request object" do
-      allow(Net::HTTP::Put).to receive(:new).with(get_argument).and_return(request_object)
+      allow(Net::HTTP::Put).to receive(:new).with(request_uri).and_return(request_object)
       response = HTTP.put(uri, {}, headers)
       expect(request_object['User-Agent']).to eq('Rspec')
       expect(response.success?).to eq(true)
@@ -103,7 +135,7 @@ describe ".put" do
 
     before do
       stub_request(:put, 'https://example.com:80/path').
-        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Type'=>'application/x-www-form-urlencoded', 'User-Agent'=>'Ruby'}).
           to_return(status: 200, body: '', headers: {})
     end
 
@@ -120,7 +152,7 @@ describe ".put" do
 
     before do
       stub_request(:put, 'http://example.com/path').
-        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Type'=>'application/x-www-form-urlencoded', 'User-Agent'=>'Ruby'}).
           to_return(status: 200, body: '', headers: {})
     end
 

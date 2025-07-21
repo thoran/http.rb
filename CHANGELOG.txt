@@ -1,3 +1,14 @@
+# 20250721
+# 0.15.1: Fix PUT; require delete and put in the load file.
+1. + require 'HTTP/post'
+2. + require 'HTTP/put'
+3. ~ HTTP/put.rb: Params in the body!
+3. ~ spec/HTTP/put_spec.rb: Remove copy-pasta rubbish.
+4. ~ spec/HTTP/post_spec.rb: Mostly formatting.
+4. ~ HTTP::VERSION: /0.15.0/0.15.1/
+5. ~ CHANGELOG.txt
+6. ~ http.rb.gemspec: Change date.
+
 # 20250716
 # 0.15.0: + PUT
 1. + HTTP.put

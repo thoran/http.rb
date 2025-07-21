@@ -6,6 +6,7 @@ require 'openssl'
 require 'uri'
 
 require_relative '../Hash/x_www_form_urlencode'
+require_relative '../HTTP/get'
 require_relative '../Net/HTTP/set_options'
 require_relative '../Net/HTTP/Delete/set_headers'
 require_relative '../Net/HTTPResponse/StatusPredicates'

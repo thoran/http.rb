@@ -1,11 +1,12 @@
 # HTTP/put.rb
 # HTTP.put
 
+require 'json'
 require 'net/http'
 require 'openssl'
 require 'uri'
 
-require_relative '../Hash/x_www_form_urlencode'
+require_relative '../HTTP/get'
 require_relative '../Net/HTTP/set_options'
 require_relative '../Net/HTTP/Put/set_headers'
 require_relative '../Net/HTTPResponse/StatusPredicates'
@@ -13,17 +14,18 @@ require_relative '../URI/Generic/use_sslQ'
 
 module HTTP
 
-  def put(uri, args = {}, headers = {}, options = {}, &block)
+  def put(uri, data = {}, headers = {}, options = {}, &block)
     uri = uri.is_a?(URI) ? uri : URI.parse(uri)
     http = Net::HTTP.new(uri.host, uri.port)
     no_redirect = options.delete(:no_redirect)
     options[:use_ssl] ||= uri.use_ssl?
     options[:verify_mode] ||= OpenSSL::SSL::VERIFY_NONE
     http.options = options
-    if args.empty?
-      request_object = Net::HTTP::Put.new(uri.request_uri)
+    request_object = Net::HTTP::Put.new(uri.request_uri)
+    if headers['Content-Type'] == 'application/json'
+      request_object.body = JSON.dump(data)
     else
-      request_object = Net::HTTP::Put.new(uri.request_uri + '?' + args.x_www_form_urlencode)
+      request_object.form_data = data
     end
     request_object.headers = headers
     request_object.basic_auth(uri.user, uri.password) if uri.user

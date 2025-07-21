@@ -194,8 +194,8 @@ describe ".post" do
       end
 
       it "does a redirect" do
-        expect(HTTP).to receive(:post).with(request_uri).and_call_original
-        expect(HTTP).to receive(:get).with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
+        expect(HTTP).to receive(:post).once.with(request_uri).and_call_original
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
         response = HTTP.post(request_uri)
         expect(response.success?).to eq(true)
       end
@@ -221,8 +221,8 @@ describe ".post" do
       end
 
       it "does a redirect" do
-        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
         expect(HTTP).to receive(:post).once.with(request_uri).and_call_original
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
         response = HTTP.post(request_uri)
         expect(response.success?).to eq(true)
       end
@@ -236,8 +236,8 @@ describe ".post" do
       end
 
       it "does a redirect" do
-        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
         expect(HTTP).to receive(:post).once.with(request_uri).and_call_original
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
         response = HTTP.post(request_uri)
         expect(response.success?).to eq(true)
       end
