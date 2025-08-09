@@ -1,7 +1,19 @@
+# 20250809
+# 0.16.0: Allow passing of a raw payload for POST/PUT.
+1. ~ HTTP.post: Check for Content-Type and whether a string.
+2. ~ HTTP.put: Check for Content-Type and whether a string.
+3. ~ spec/HTTP/post_spec.rb: + raw form data example
+4. ~ spec/HTTP/post_spec.rb: + raw JSON example
+5. ~ spec/HTTP/put_spec.rb: + raw form data example
+6. ~ spec/HTTP/put_spec.rb: + raw JSON example
+7. ~ HTTP::VERSION: /0.15.1/0.16.0/
+8. ~ CHANGELOG.txt: + 0.16.0 entry; Small edit on 0.15.1.
+9. ~ http.rb.gemspec: Change date.
+
 # 20250721
 # 0.15.1: Fix PUT; require delete and put in the load file.
-1. + require 'HTTP/post'
-2. + require 'HTTP/put'
+1. + require 'HTTP/put'
+2. + require 'HTTP/delete'
 3. ~ HTTP/put.rb: Params in the body!
 3. ~ spec/HTTP/put_spec.rb: Remove copy-pasta rubbish.
 4. ~ spec/HTTP/post_spec.rb: Mostly formatting.

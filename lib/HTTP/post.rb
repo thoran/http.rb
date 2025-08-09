@@ -22,10 +22,19 @@ module HTTP
     options[:verify_mode] ||= OpenSSL::SSL::VERIFY_NONE
     http.options = options
     request_object = Net::HTTP::Post.new(uri.request_uri)
-    if headers['Content-Type'] == 'application/json'
-      request_object.body = JSON.dump(data)
+    content_type = headers['Content-Type'].to_s
+    if content_type.start_with?('application/json')
+      if data.is_a?(String)
+        request_object.body = data
+      else
+        request_object.body = JSON.dump(data)
+      end
     else
-      request_object.form_data = data
+      if data.is_a?(String)
+        request_object.body = data
+      else
+        request_object.form_data = data
+      end
     end
     request_object.headers = headers
     request_object.basic_auth(uri.user, uri.password) if uri.user

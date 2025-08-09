@@ -77,12 +77,70 @@ describe ".post" do
     end
   end
 
+  context "with raw form data supplied" do
+    let(:uri){'http://example.com/path'}
+    let(:parsed_uri){URI.parse(uri)}
+    let(:args) do; {a: 1, b: 2}.x_www_form_urlencode; end
+    let(:headers) do; {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Type'=>'application/x-www-form-urlencoded', 'User-Agent'=>'Ruby'}; end
+    let(:encoded_form_data){args}
+    let(:request_uri){parsed_uri.request_uri}
+    let(:request_object){Net::HTTP::Post.new(request_uri)}
+
+    before do
+      stub_request(:post, "http://example.com/path").
+        with(body: encoded_form_data, headers: headers).
+          to_return(status: 200, body: '', headers: {})
+    end
+
+    it "sets the form data" do
+      allow(Net::HTTP::Post).to receive(:new).with(request_uri).and_return(request_object)
+      response = HTTP.post(uri, args, headers)
+      expect(request_object.body).to eq(encoded_form_data)
+      expect(response.success?).to eq(true)
+    end
+
+    it "creates a new Net::HTTP::Post object" do
+      expect(Net::HTTP::Post).to receive(:new).with(request_uri).and_return(request_object)
+      response = HTTP.post(uri, args, headers)
+      expect(response.success?).to eq(true)
+    end
+  end
+
   context "with JSON data supplied" do
     let(:uri){'http://example.com/path'}
     let(:parsed_uri){URI.parse(uri)}
     let(:args) do; {a: 1, b: 2}; end
     let(:headers) do; {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Type'=>'application/json', 'User-Agent'=>'Ruby'}; end
     let(:json_data){JSON.dump(args)}
+    let(:request_uri){parsed_uri.request_uri}
+    let(:request_object){Net::HTTP::Post.new(request_uri)}
+
+    before do
+      stub_request(:post, "http://example.com/path").
+        with(body: json_data, headers: headers).
+          to_return(status: 200, body: '', headers: {})
+    end
+
+    it "sets the body" do
+      allow(Net::HTTP::Post).to receive(:new).with(request_uri).and_return(request_object)
+      response = HTTP.post(uri, args, headers)
+      expect(request_object.body).to eq(json_data)
+      expect(response.success?).to eq(true)
+    end
+
+    it "creates a new Net::HTTP::Post object" do
+      expect(Net::HTTP::Post).to receive(:new).with(request_uri).and_return(request_object)
+      response = HTTP.post(uri, args, headers)
+      expect(response.success?).to eq(true)
+    end
+  end
+
+  context "with raw JSON data supplied" do
+    let(:uri){'http://example.com/path'}
+    let(:parsed_uri){URI.parse(uri)}
+    let(:args) do; JSON.dump({a: 1, b: 2}); end
+    let(:headers) do; {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Type'=>'application/json', 'User-Agent'=>'Ruby'}; end
+    let(:json_data){args}
     let(:request_uri){parsed_uri.request_uri}
     let(:request_object){Net::HTTP::Post.new(request_uri)}
 
