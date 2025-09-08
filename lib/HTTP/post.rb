@@ -22,7 +22,7 @@ module HTTP
     options[:verify_mode] ||= OpenSSL::SSL::VERIFY_NONE
     http.options = options
     request_object = Net::HTTP::Post.new(uri.request_uri)
-    content_type = headers['Content-Type'].to_s
+    content_type = headers.find{|k, v| k.downcase == 'content-type'}&.last.to_s
     if content_type.start_with?('application/json')
       if data.is_a?(String)
         request_object.body = data

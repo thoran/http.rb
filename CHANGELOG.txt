@@ -1,3 +1,14 @@
+# 20250908
+# 0.16.1: Allow any case for the content-type key.
+1. ~ HTTP.post: Check for any case for content-type key.
+2. ~ HTTP.put: Check for any case for content-type key.
+3. ~ spec/HTTP/post_spec.rb: + specs for different content-type key cases.
+4. ~ spec/HTTP/put_spec.rb: + specs for different content-type key cases.
+5. ~ spec/HTTP/put_spec.rb: Fix some erroneous references to (P|p)ost.
+6. ~ HTTP::VERSION: /0.16.0/0.16.1/
+7. ~ CHANGELOG.txt: + 0.16.1 entry
+8. ~ http.rb.gemspec: Change date.
+
 # 20250809
 # 0.16.0: Allow passing of a raw payload for POST/PUT.
 1. ~ HTTP.post: Check for Content-Type and whether a string.

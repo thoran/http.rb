@@ -185,6 +185,54 @@ describe ".post" do
     end
   end
 
+  context "when different content-type header key cases are supplied" do
+    let(:uri){'http://example.com/path'}
+    let(:parsed_uri){URI.parse(uri)}
+    let(:headers) do; {content_type_key => 'application/json'}; end
+    let(:request_uri){parsed_uri.request_uri}
+    let(:request_object){Net::HTTP::Post.new(request_uri)}
+    let(:args)do; {a: 1, b: 2}; end
+
+    before do
+      stub_request(:post, 'http://example.com/path').
+        with(headers: {'Content-Type'=>'application/json'}).
+          to_return(status: 200, body: '', headers: {})
+    end
+
+    context "title-cased" do
+      let(:content_type_key){'Content-Type'}
+
+      it "detects the content type" do
+        allow(Net::HTTP::Post).to receive(:new).with(request_uri).and_return(request_object)
+        response = HTTP.post(uri, args, headers)
+        expect(request_object['Content-Type']).to eq('application/json') # The request object doesn't care about the case of the content-type key.
+        expect(request_object.body).to eq(JSON.dump(args))
+      end
+    end
+
+    context "title-case only at the start" do
+      let(:content_type_key){'Content-type'}
+
+      it "detects the content type" do
+        allow(Net::HTTP::Post).to receive(:new).with(request_uri).and_return(request_object)
+        response = HTTP.post(uri, args, headers)
+        expect(request_object['Content-Type']).to eq('application/json') # The request object doesn't care about the case of the content-type key.
+        expect(request_object.body).to eq(JSON.dump(args))
+      end
+    end
+
+    context "lowercase" do
+      let(:content_type_key){'content-type'}
+
+      it "detects the content type" do
+        allow(Net::HTTP::Post).to receive(:new).with(request_uri).and_return(request_object)
+        response = HTTP.post(uri, args, headers)
+        expect(request_object['Content-Type']).to eq('application/json') # The request object doesn't care about the case of the content-type key.
+        expect(request_object.body).to eq(JSON.dump(args))
+      end
+    end
+  end
+
   context "with options supplied" do
     let(:uri){'http://example.com/path'}
     let(:parsed_uri){URI.parse(uri)}
