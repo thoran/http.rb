@@ -1,3 +1,20 @@
+# 20260325
+# 0.17.0: Extract HTTP.request method; consolidate set_headers.
+1. + HTTP.request: Extract common plumbing (connection, SSL, auth, redirect, response) from verb methods.
+2. ~ HTTP.get: Delegate to HTTP.request.
+3. ~ HTTP.delete: Delegate to HTTP.request.
+4. ~ HTTP.post: Delegate to HTTP.request.
+5. ~ HTTP.put: Delegate to HTTP.request.
+6. + Net::HTTPRequest#set_headers: Consolidate per-verb set_headers into single method on superclass.
+7. - Net::HTTP::Get#set_headers
+8. - Net::HTTP::Post#set_headers
+9. - Net::HTTP::Put#set_headers
+10. - Net::HTTP::Delete#set_headers
+11. + TODO.txt
+12. ~ HTTP::VERSION: /0.16.1/0.17.0/
+13. ~ CHANGELOG.txt: + 0.17.0 entry
+14. ~ http.rb.gemspec: Change date.
+
 # 20250908
 # 0.16.1: Allow any case for the content-type key.
 1. ~ HTTP.post: Check for any case for content-type key.

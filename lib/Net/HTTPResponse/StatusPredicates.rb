@@ -1,3 +1,6 @@
+# Net/HTTPResponse/StatusPredicates.rb
+# Net::HTTPResponse::StatusPredicates
+
 module Net
   class HTTPResponse
     module StatusPredicates
